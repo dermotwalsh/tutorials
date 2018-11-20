@@ -60,12 +60,12 @@ To begin, you will create Internet of Things Platform service - The hub which ca
 
 1. Go to the [**{{site.data.keyword.Bluemix_notm}} Catalog**](https://console.bluemix.net/catalog/) and select [**Internet of Things Platform**](https://console.bluemix.net/catalog/services/internet-of-things-platform) under the **Internet of Things** section.
 2. Enter `IoT demo hub` as the service name, click **Create** and **Launch** the dashboard.
-3. From the side menu, select **Security > Connection Security** and choose **TLS Optional** under **Default Rule** > **Security Level** and click **Save**.
+3. From the side menu, select **Security**, then edit **Connection Security**, choose **TLS Optional** under **Default Rule** > **Security Level** and click **OK** and then **Save**.
 4. From the side menu, select **Devices** > **Device Types**  and **+ Add Device Type**.
 5. Enter `simulator` as the **Name** and click **Next** and **Done**.
 6. Next, click on **Register Devices**
 7. Choose `simulator` for **Select Existing Device Type** and then enter `phone` for **Device ID**.
-8. Click **Next** until the **Device Security** (under Security tab) screen is displayed.
+8. Click **Next** until the **Security** screen is displayed.
 9. Enter a value for the **Authentication Token**, for example: `myauthtoken` and click **Next**.
 10. After clicking **Done**, your connection information is displayed. Keep this tab open.
 
@@ -83,14 +83,14 @@ Next, you will deploy a Node.js web application and visit it on your phone, whic
 2. Open the code in an IDE of your choice and change the `name` and `host` values in the **manifest.yml** file to a unique value.
 3. Push the application to the {{site.data.keyword.Bluemix_notm}}.
    ```bash
-   ibmcloud login
+   ibmcloud login -a api.eu-gb.bluemix.net
    ibmcloud target --cf
    ibmcloud cf push
    ```
 4. In a few minutes, your application will be deployed and you should see a URL similar to `<UNIQUE_NAME>.mybluemix.net`
 5. Visit this URL on your phone using a browser.
 6. Enter the connection information from your IoT Dashboard tab under **Device Credentials** and click **Connect**.
-7. Your phone will start transmitting data. Back in the **IBM {{site.data.keyword.iot_short_notm}} tab**, check for new entires in the **Recent Events** section.
+7. Your phone will start transmitting data. Back in the **IBM {{site.data.keyword.iot_short_notm}} tab**, check for new entries in the **Recent Events** section.
   ![](images/solution16/recent_events_with_phone.png)
 
 ## Display live data in IBM {{site.data.keyword.iot_short_notm}}
@@ -101,13 +101,13 @@ Next, you will create a board and cards to display device data in the dashboard.
 {: #createboard}
 
 1. Open the **IBM {{site.data.keyword.iot_short_notm}} dashboard**.
-2. Select **Boards** from the left menu, and then click **Create New Board**.
+2. Select **Boards** from the left menu, and then click **+ Create New Board**.
 3. Enter a name for the board, `Simulators` as example,  and click **Next** and then **Submit**.  
 4. Select the board that you just created to open it.
 
 ### Display device data
 {: #cardtemp}
-1. Click **Add New Card**, and then select the **Line Chart** card type, which is located in the Devices section.
+1. Click **+ Add New Card**, and then select the **Line Chart** card type, which is located in the Devices section.
 2. Select your device from the list, then click **Next**.
 3. Click **Connect new data set**.
 4. In the Create Value Card page, select or enter the following values and click **Next**.
@@ -124,8 +124,9 @@ Next, you will create a board and cards to display device data in the dashboard.
    ![](images/solution16/board.png)
 
 ## Store historical data in {{site.data.keyword.cloudant_short_notm}}
+**Note:** Ensure pop-up blocker is disabled before proceeding with this section.
 1. Go to the [**{{site.data.keyword.Bluemix_notm}} Catalog**](https://console.bluemix.net/catalog/) and create a new [{{site.data.keyword.cloudant_short_notm}}](https://console.bluemix.net/catalog/services/cloudant-nosql-db) named `iot-db`.
-2. Ensure `Use both legacy credentials and IAM` is selected for **Available authentication methods**.
+2. Ensure `Use both legacy credentials and IAM` is selected for **Available authentication methods**, click **Create**.
 3. From the command line, create an alias to the database:
    ```ibmcloud resource service-alias-create wiotp-cloudant-alias --instance-name 'iot-db'```
 4. Open the **IBM {{site.data.keyword.iot_short_notm}} dashboard**.
@@ -135,6 +136,7 @@ Next, you will create a board and cards to display device data in the dashboard.
 8. A new window should load prompting for authorization. If you don't see this window, disable your pop-up blocker and refresh the page.
 
 Your device data is now saved in {{site.data.keyword.cloudant_short_notm}}. Launch the {{site.data.keyword.cloudant_short_notm}} dashboard to see your data.
+**Note:** It will take a few minutes before the data starts appearing in the Database. Refresh the page until the **# of Docs** starts to increase for the database with todays timestamp. 
 
 ![](images/solution16/cloudant.png)
 
@@ -145,8 +147,8 @@ In this section, you will use the Jupyter Notebook that is available in the IBM 
 
 ![](images/solution16/watson_studio.png)
 
-### Create a new project
-1. Go to the [**{{site.data.keyword.Bluemix_notm}} Catalog**](https://console.bluemix.net/catalog/) and under **AI**, select [**{{site.data.keyword.DSX_short}}**](https://console.bluemix.net/catalog/services/data-science-experience).
+### Create a new project in Watson Studio
+1. Go to the [**{{site.data.keyword.Bluemix_notm}} Catalog**](https://console.bluemix.net/catalog/) and under **AI**, select [**{{site.data.keyword.DSX_short}}**](https://console.bluemix.net/catalog/services/watson-studio).
 2. **Create** the service and launch it's dashboard by clicking **Get Started**
 3. Create a **New Project** > Select **Data Science** and enter `Detect Anomaly` as the **Name**.
    ![](images/solution16/new_project.png)
@@ -157,21 +159,21 @@ In this section, you will use the Jupyter Notebook that is available in the IBM 
 ### Connection to {{site.data.keyword.cloudant_short_notm}} for data
 
 1. Click on **Assets** > **+ Add to Project** > **Connection**  
-2. Select the **iot-db** {{site.data.keyword.cloudant_short_notm}} where the device data is stored.
-3. Check the **Credentials** then click **Create**.
+2. Select the **iot-db** {{site.data.keyword.cloudant_short_notm}} where the device data is stored. If you get an error, repeat the steps above but select the alias.
+3. Click **Create**.
 
 ### Create a Jupyter (ipynb) notebook
  1. Click **Services** on the top navigation bar > Compute Services.
  2. Click **Add Service**, and then **Add** under Apache Spark > Select Lite plan and **Create**.
- 3. Select a space, change the service name if you want to and **Create**.
+ 3. Select a space, change the service name if you want to and **Confirm**.
  4. Navigate to the `Detect Anomaly` project through **Projects** and select **Settings** tab
  5. Scroll down to **Associated services** and select **Add service** > **Spark**
  6. Click **Existing** > and select your spark instance from the **Select service from the list** > **Select**
- 7. Click **Add to project** > **Notebook**.
+ 7. Click **+ Add to project** > **Notebook**.
  8. Enter `Anomaly-detection-sample` for the **Name**.
- 9. Click **From URL** and enter `https://github.com/dermotwalsh/iot-device-phone-simulator/blob/patch-1/anomaly-detection/Anomaly-detection-watson-studio.ipynb` in the **Notebook URL**.
+ 9. Click **From URL** and enter `https://github.com/IBM-Cloud/iot-device-phone-simulator/blob/656d9e84ea320a2e09c660de06a230013c13b9c6/anomaly-detection/Anomaly-detection-watson-studio.ipynb` in the **Notebook URL**.
 10. Select the Apache Spark you created above as your runtime. 
-11. **Create Notebook**. Set `Python 2 with Spark 2.1` as your Kernel.
+11. **Create Notebook**. Set `Python 2 with Spark 2.1` as your Kernel when prompted.
    Check that the notebook is created with metadata and code.
    ![Jupyter Notebook DSX](images/solution16/jupyter_notebook_dsx.png)
    To update, **Kernel** > Change kernel. To **Trust** the notebook, **File** > Trust Notebook.
@@ -179,7 +181,7 @@ In this section, you will use the Jupyter Notebook that is available in the IBM 
 
 ### Run the notebook and detect anomalies   
 1. Select the cell that starts with `!pip install --upgrade pixiedust==1.1.9`, and then click **Run** or **Ctrl + Enter** to execute the code.
-2. When the installation is complete, restart the Spark kernel by clicking the **Restart Kernel** icon.
+2. When the installation is complete, restart the Spark kernel by clicking the **Restart Kernel** icon. Wait until the kernel restarts, it will take a few seconds and status messages will appear, finishing with **Kernel ready**.
 3. Click into the next code cell, then import your {{site.data.keyword.cloudant_short_notm}} credentials to that cell by completing the following steps:
   * Click ![](images/solution16/data_icon.png)
   * Select the **Connections** tab.
